@@ -1,0 +1,562 @@
+---
+title: "FIFA 2018"
+author: "Doğukan Göksu"
+date: "09 03 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+setwd("C:/Users/Test/Desktop/stat412/PROJECT")
+data <- read.csv("FIFA 2018 Statistics.csv", header =T, sep=",")
+library(naniar)
+library(mice)
+library(VIM)
+library(lattice)
+library(missForest)
+library(ggplot2)
+library(dplyr)
+head(data)
+dim(data)
+str(data)
+data <- data[,-1]
+length(which(is.na(data))) #There are 266 NA's but actually NA's were given instead of 0.
+hist(data$Attempts)
+barplot(table(data$Man.of.the.Match))
+x <- numeric(26)
+for (i in 1:26) {
+x[i] = length(which(is.na(data[,i]))) }
+x     #34 No goal, 116 no own goal 116 no own goal time.
+
+md.pattern(data)
+# All these missing values are structurally missing values.I will assign them 0.
+data$X1st.Goal[which(is.na(data$X1st.Goal))] = 0
+data$Own.goals[which(is.na(data$Own.goals))] = 0
+data$Own.goal.Time[which(is.na(data$Own.goal.Time))] = 0
+library(missForest) #Generate 10% missing values at Random
+data.mis <- prodNA(data[,-c(1,2)], noNA = 0.1)
+data.mis <- cbind(data[,c(1,2)],data.mis)
+md.pattern(data.mis[,-c(1,2)],rotate.names = T)
+aggr(data.mis, col=c("grey","firebrick1"), prop = T, numbers = F,sortVars = T)
+data_miss = aggr(data.mis[,-c(1,2)], col=c("grey","firebrick1"), numbers=TRUE,
+                  sortVars=T, labels=names(data),
+                  cex.axis=0.6, cex.numbers = 0.6, gap=1,
+                  ylab=c("Proportion of missingness","Missingness Pattern"))
+par(mfrow=c(6,4))
+graphics.off()
+library(naniar)
+gg_miss_var(data.mis, show_pct = T)
+gg_miss_which(data.mis)
+
+
+par(mfrow=c(6,4))
+for (i in 3:26) {
+  marginplot(data.mis[, c(3,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+marginplot(data.mis[, c(3,20)], col = c("grey","firebrick1"), cex.numbers = 1.1, pch = 19) #Looks strange.
+
+par(mfrow=c(6,3))
+for (i in 3:20) {
+  marginplot(data.mis[, c(3,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+
+for (i in 3:26) {
+  marginplot(data.mis[, c(4,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(5,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(6,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(7,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(8,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(9,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(10,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(11,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(12,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(13,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(14,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(15,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(16,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(17,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(18,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(19,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(20,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(21,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(22,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(23,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(24,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(25,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+for (i in 3:26) {
+  marginplot(data.mis[, c(26,i)], col = c("grey","firebrick1"),cex.numbers = 1.1, pch = 19)}
+
+graphics.off()
+mice_imputes <- mice(data.mis, m=5, maxit = 40)
+imputed_data <- complete(mice_imputes,5)
+md.pattern(imputed_data)
+xyplot(mice_imputes, Offsides ~  Free.Kicks | .imp, pch = 20, cex = 1.4)
+xyplot(mice_imputes, Attempts  ~  Ball.Possession.. | .imp, pch = 20, cex = 1.4)
+xyplot(mice_imputes, Free.Kicks   ~  Corners | .imp, pch = 20, cex = 1.4)
+xyplot(mice_imputes, Passes  ~  Pass.Accuracy..  | .imp, pch = 20, cex = 1.4)
+xyplot(mice_imputes, Distance.Covered..Kms.  ~  X1st.Goal  | .imp, pch = 20, cex = 1.4)
+xyplot(mice_imputes, Blocked  ~  Saves  | .imp, pch = 20, cex = 1.4)
+xyplot(mice_imputes, Yellow.Card  ~  Red  | .imp, pch = 20, cex = 1.4)
+
+densityplot(mice_imputes)
+############################################################### EDA #############
+#1 Which one is more important to score making more passes or having more shoots?
+
+library(gridExtra)
+
+g1 <- ggplot(imputed_data, aes(x = Attempts, y = Goal.Scored)) + geom_jitter(color = "turquoise4") + theme_minimal() + 
+    labs(x = "Number of shoots", y = "Goal Scored", 
+         title = "Scatter plot of Number of Shoots vs Goal Scored")
+cor(imputed_data$Attempts, imputed_data$Goal.Scored)
+g2 <- ggplot(imputed_data, aes(x = Passes, y = Goal.Scored)) + geom_jitter(color = "turquoise4") + theme_minimal() +
+    labs(title = "Scatter plot of Number of Passes vs Goal Scored", x = "Number of passes", 
+         y = "Goal Scored")
+cor(imputed_data$Passes, imputed_data$Goal.Scored)
+grid.arrange(g1,g2,ncol = 2)
+
+#2 Is there any difference between rounds in terms of goal scored ?
+ggplot(imputed_data, aes(x=Round, y=Goal.Scored)) + geom_violin(aes(fill=Round)) + 
+  labs(y ="Goal Scored", title = "Violin Plot of Goal Scored vs Round") + 
+    scale_fill_manual(values=heat.colors(6)) + theme_minimal()
+library(dplyr)
+group_by(imputed_data, Round) %>%
+  summarise(
+    count = n(),
+    mean = mean(Goal.Scored, na.rm = TRUE),
+    median = median(Goal.Scored, na.rm =TRUE),
+    sd = sd(Goal.Scored, na.rm = TRUE))
+
+ggplot(imputed_data, aes(x=Round, y=Goal.Scored)) + geom_boxplot(aes(fill=Round)) + 
+  labs(y ="Goal Scored", title = "Violin Plot of Goal Scored vs Round") + 
+  scale_fill_manual(values=heat.colors(6)) + theme_minimal() 
+
+shapiro.test(imputed_data$Goal.Scored)
+kruskal.test(imputed_data$Goal.Scored~imputed_data$Round)
+
+#3 Ball posession - fouls commited
+ggplot(imputed_data, aes(x = Ball.Possession.., y = Fouls.Committed)) + geom_jitter() + geom_smooth(method = "lm") + theme_minimal() + 
+  labs(x = "Having Ball %", y = "Fouls Commited", 
+       title = "Scatter plot of Having Ball vs Commiting Foul")
+cor(imputed_data$Ball.Possession..,imputed_data$Fouls.Committed)
+
+#4 How is yellow card number changed for teams and rounds?
+table(imputed_data$Yellow.Card)
+table(imputed_data$Yellow...Red)
+table(imputed_data$Red)
+imputed_data$Yellow.Card <- as.numeric(imputed_data$Yellow.Card)
+imputed_data$Yellow...Red <- as.numeric(imputed_data$Yellow...Red)
+imputed_data$Red <- as.numeric(imputed_data$Red)
+
+ggplot(imputed_data, aes(x=Yellow.Card, y=Team)) +
+  geom_segment( aes(x=0, xend=Yellow.Card, y=Team, yend=Team)) +
+  geom_point(size=3, fill=alpha("firebrick", 1), alpha=0.5, shape=21, stroke=1) + 
+  labs(title = "Lollipop Plot of Yellow Card", x = "Number of Yellow Cards") +
+    facet_wrap(~ Round, scales = "free_y") + theme_minimal() 
+table(imputed_data$Team)
+
+group_by(imputed_data, Round) %>%
+  summarise(
+    count = n(),
+    mean = mean(Yellow.Card, na.rm = TRUE),
+    median = median(Yellow.Card, na.rm =TRUE),
+    sd = sd(Yellow.Card, na.rm = TRUE))
+kruskal.test(imputed_data$Yellow.Card~imputed_data$Round)
+#5 Is the average number of commited fouls and exposed fouls equal?
+p1 <- ggplot(imputed_data, aes(x=Fouls.Committed)) + 
+        geom_histogram(bins = 20, aes(y=..density..), colour="black", fill="darkgrey")+
+        geom_density(alpha=.2, fill="#FF6666") +theme_minimal() + xlim(5,25) +
+        labs(x="Commited Fouls", title = "Histogram of Commited Fouls with Density")
+p2 <- ggplot(imputed_data, aes(x=Free.Kicks)) + 
+        geom_histogram(bins = 20, aes(y=..density..), colour="black", fill="darkgrey")+
+        geom_density(alpha=.2, fill="#FF6666") +theme_minimal() +xlim(5,25) +
+        labs(x="Exposed Fouls", title = "Histogram of Exposed Fouls with Density")
+grid.arrange(p1,p2)  
+
+shapiro.test(imputed_data$Fouls.Committed)
+shapiro.test(imputed_data$Free.Kicks)
+wilcox.test(imputed_data$Fouls.Committed,imputed_data$Free.Kicks)
+###############################################################################
+data <- imputed_data
+str(data)
+data$Own.goals <- as.factor(data$Own.goals)
+
+################################################# LOGISTIC REGRESSION
+# DATA PREPARATION
+data$Ball.Possession.. <- (data$Ball.Possession.. - min(data$Ball.Possession..))/(max(data$Ball.Possession..) - min(data$Ball.Possession..))
+data$Attempts <- (data$Attempts - min(data$Attempts))/(max(data$Attempts) - min(data$Attempts))
+data$On.Target <- (data$On.Target - min(data$On.Target))/(max(data$On.Target) - min(data$On.Target))
+data$Off.Target <- (data$Off.Target - min(data$Off.Target))/(max(data$Off.Target) - min(data$Off.Target))
+data$Blocked <- (data$Blocked - min(data$Blocked))/(max(data$Blocked) - min(data$Blocked))
+data$Corners <- (data$Corners - min(data$Corners))/(max(data$Corners) - min(data$Corners))
+data$Offsides <- (data$Offsides - min(data$Offsides))/(max(data$Offsides) - min(data$Offsides))
+data$Free.Kicks <- (data$Free.Kicks - min(data$Free.Kicks))/(max(data$Free.Kicks) - min(data$Free.Kicks))
+data$Saves <- (data$Saves - min(data$Saves))/(max(data$Saves) - min(data$Saves))
+data$Pass.Accuracy.. <- (data$Pass.Accuracy.. - min(data$Pass.Accuracy..))/(max(data$Pass.Accuracy..) - min(data$Pass.Accuracy..))
+data$Passes <- (data$Passes - min(data$Passes))/(max(data$Passes) - min(data$Passes))
+data$Distance.Covered..Kms. <- (data$Distance.Covered..Kms. - min(data$Distance.Covered..Kms.))/(max(data$Distance.Covered..Kms.) - min(data$Distance.Covered..Kms.))
+data$Fouls.Committed <- (data$Fouls.Committed - min(data$Fouls.Committed))/(max(data$Fouls.Committed) - min(data$Fouls.Committed))
+data$Yellow.Card <- as.factor(data$Yellow.Card)
+data$Yellow...Red <- as.factor(data$Yellow...Red)
+data$Red <- as.factor(data$Red)
+data$Goals.in.PSO <- as.factor(data$Goals.in.PSO)
+summary(data)
+################################################# CROSS VALIDATION
+input_ones <- data[which(data$Own.goals == 1),]
+input_zeros <- data[which(data$Own.goals == 0),]
+set.seed(412)
+ones_train_rows <- sample(1:nrow(input_ones), 0.8*nrow(input_ones))
+zeros_train_rows <- sample(1:nrow(input_zeros), 0.8*nrow(input_zeros))
+train_ones <- input_ones[ones_train_rows,]
+train_zeros <- input_zeros[zeros_train_rows,]
+training_set <- rbind(train_ones,train_zeros)
+test_ones <-  input_ones[-ones_train_rows,]
+test_zeros <- input_zeros[-zeros_train_rows,]
+test_set <- rbind(test_ones,test_zeros)
+
+summary(data$Man.of.the.Match)
+summary(training_set$Man.of.the.Match)
+summary(test_set$Man.of.the.Match)
+# FULL MODEL
+logitMod <- glm(Man.of.the.Match~.,family = "binomial", data = training_set[,-c(1,2)])
+summary(logitMod)
+pred.train <- predict(logitMod,training_set)
+library(InformationValue)
+optcutoff <- optimalCutoff(training_set$Man.of.the.Match,pred.train)
+optcutoff
+predTrain_logMod <- ifelse(pred.train>0.5,1,0)
+predTrain_logMod
+logMod.conf.mat.train <- table(predTrain_logMod,training_set$Man.of.the.Match)
+logMod.conf.mat.train
+logMod.accuracy.train <- (logMod.conf.mat.train[1,1]+logMod.conf.mat.train[2,2])/(logMod.conf.mat.train[1,1]+
+                   logMod.conf.mat.train[1,2]+logMod.conf.mat.train[2,1]+logMod.conf.mat.train[2,2])
+logMod.accuracy.train
+logMod.sensitivity.train <- (logMod.conf.mat.train[2,2]) / (logMod.conf.mat.train[1,2] + logMod.conf.mat.train[2,2])
+logMod.sensitivity.train
+logMod.specificity.train <- (logMod.conf.mat.train[1,1]) / (logMod.conf.mat.train[1,1] + logMod.conf.mat.train[2,1])
+logMod.specificity.train
+misclaser.train <-  misClassError(training_set$Man.of.the.Match, predTrain_motm, threshold = 0.5)
+misclaser.train
+# REDUCED MODEL
+logitMod2 <- glm(Man.of.the.Match~.,family = "binomial", data = training_set[,-c(1,2,15,18,19)])
+summary(logitMod2)
+
+pred.train2 <- predict(logitMod2,training_set)
+optcutoff <- optimalCutoff(training_set$Man.of.the.Match,pred.train2)
+optcutoff
+predTrain_motm2 <- ifelse(pred.train2>-0.5,1,0)
+table(predTrain_motm2)
+conf_mat.train2 <- table(predTrain_motm2,training_set$Man.of.the.Match)
+conf_mat.train2
+accuracy.train2 <- (conf_mat.train2[1,1]+conf_mat.train2[2,2])/(conf_mat.train2[1,1]+
+conf_mat.train2[1,2]+conf_mat.train2[2,1]+conf_mat.train2[2,2])
+accuracy.train2
+sensitivity.train2 <- (conf_mat.train2[2,2]) / (conf_mat.train2[1,2] + conf_mat.train2[2,2])
+sensitivity.train2
+specificity.train2 <- (conf_mat.train2[1,1]) / (conf_mat.train2[1,1] + conf_mat.train2[2,1])
+specificity.train2
+misclaser.train2 <-  misClassError(training_set$Man.of.the.Match, predTrain_motm2, threshold = -0.5)
+misclaser.train2
+#################################
+anova(logitMod, test = "Chisq")
+anova(logitMod2, test = "Chisq")
+library(pscl)
+pR2(logitMod)
+pR2(logitMod2)
+################################# FULL MODEL IS BETTER.
+pred.test <- predict(logitMod,test_set)
+predTest_logMod <- ifelse(pred.test>0.5,1,0)
+logMod.conf.mat.test <- table(predTest_logMod,test_set$Man.of.the.Match)
+logMod.conf.mat.test
+logMod.accuracy.test <- (logMod.conf.mat.test[1,1]+logMod.conf.mat.test[2,2])/(logMod.conf.mat.test[1,1]+logMod.conf.mat.test[1,2]+
+                    logMod.conf.mat.test[2,1]+logMod.conf.mat.test[2,2])
+logMod.accuracy.test
+logMod.sensitivity.test <- (logMod.conf.mat.test[2,2]) / (logMod.conf.mat.test[1,2] + logMod.conf.mat.test[2,2])
+logMod.sensitivity.test
+logMod.specificity.test <- (logMod.conf.mat.test[1,1]) / (logMod.conf.mat.test[1,1] + logMod.conf.mat.test[2,1])
+logMod.specificity.test
+
+confusionMatrix(predTest_logMod,test_set$Man.of.the.Match)
+
+pred <- prediction(predTest_logMod, test_set$Man.of.the.Match)
+perf <- performance(pred, measure = "tpr", x.measure = "fpr")
+plot(perf, main = "ROC Curve")
+abline(a=0,b=1,lwd=2,lty=2,col="darkgrey")
+area.under.curve <- performance(pred, measure = "auc")
+area.under.curve <- area.under.curve@y.values[[1]]
+area.under.curve
+
+
+################################################# NEURAL NETWORK
+nn <- neuralnet(Man.of.the.Match~. , data=training_set[,-c(1,2,3,17,18,19,22,23,24,25)],
+                hidden = 4, lifesign = "minimal", linear.output = F,threshold = 0.1)
+#setting the number of hidden layyer to 4 
+#make linear.output = FALSE in order to give the values 1 and 0. 
+#threshold= 0.1 means that if the change in error during an iteration is less than %10,
+#then no further optimization will be carried out by the model
+
+## plot the NN
+plot(nn, rep = "best")
+
+## test the resulting output
+#Once we've trained the neural network we are ready to test it.
+temp_train <- subset(training_set, select = c(4,5,6,7,8,9,10,11,12,13,14,15,16,21,26))
+# here use subset() function to chose the covariate variables and eliminate the response
+head(temp_train)
+nn.results.train <- compute(nn, temp_train)#creates the prediction variable
+
+results.train <- data.frame(actual = training_set$Man.of.the.Match, prediction = nn.results.train$net.result)
+results.train
+
+results.train$prediction.1 <- round(results.train$prediction.1)
+results.train$prediction.2 <- round(results.train$prediction.2)
+table(results.train$actual,results.train$prediction.1)
+nn.conf.mat.train <- table(results.train$actual,results.train$prediction.2) # better
+nn.conf.mat.train
+nn.accuracy.train <- (nn.conf.mat.train[1,1] + nn.conf.mat.train[2,2]) /(nn.conf.mat.train[1,1] + 
+                      nn.conf.mat.train[1,2] + nn.conf.mat.train[2,1] + nn.conf.mat.train[2,2])
+nn.accuracy.train
+nn.sensitivity.train <- (nn.conf.mat.train[2,2]) / (nn.conf.mat.train[1,2] + nn.conf.mat.train[2,2])
+nn.sensitivity.train
+nn.specificity.train <- (nn.conf.mat.train[1,1]) / (nn.conf.mat.train[1,1] + nn.conf.mat.train[2,1])
+nn.specificity.train
+
+
+
+# use test set on nn
+temp_test <- subset(test_set, selecet = c(4,5,6,7,8,9,10,11,12,13,14,15,16,21,26))
+nn.results.test <- compute(nn,temp_test)
+results.test <- data.frame(actual = test_set$Man.of.the.Match, prediction = nn.results.test$net.result) 
+results.test
+results.test$prediction.1 <- round(results.test$prediction.1)
+results.test$prediction.2 <- round(results.test$prediction.2)
+table(results.test$actual,results.test$prediction.1)
+nn.conf.mat.test <-  table(results.test$actual,results.test$prediction.2)
+nn.conf.mat.test
+nn.accuracy.test <- (nn.conf.mat.test[1,1] + nn.conf.mat.test[2,2]) /(nn.conf.mat.test[1,1] + 
+                    nn.conf.mat.test[1,2] + nn.conf.mat.test[2,1] + nn.conf.mat.test[2,2])
+nn.accuracy.test
+nn.sensitivity.test <- (nn.conf.mat.test[2,2]) / (nn.conf.mat.test[1,2] + nn.conf.mat.test[2,2])
+nn.sensitivity.test
+nn.specificity.test <- (nn.conf.mat.test[1,1]) / (nn.conf.mat.test[1,1] + nn.conf.mat.test[2,1])
+nn.specificity.test
+
+pred <- prediction(results.test$prediction.2, test_set$Man.of.the.Match)
+perf <- performance(pred, measure = "tpr", x.measure = "fpr")
+plot(perf, main = "ROC Curve")
+abline(a=0,b=1,lwd=2,lty=2,col="darkgrey")
+area.under.curve <- performance(pred, measure = "auc")
+area.under.curve <- area.under.curve@y.values[[1]]
+area.under.curve
+################################################# SUPPORT VECTOR MACHINE
+library(e1071)
+library(Metrics)
+library(kernlab)
+x1 <- training_set$Distance.Covered..Kms.
+x2 <- training_set$Ball.Possession..
+x <- cbind(x1,x2)
+y <- training_set$Man.of.the.Match
+dat <- data.frame(x=x,y=as.factor(y))
+dim(dat)
+ggplot(data = dat, aes(x = x2, y = x1, color = y, shape = y)) + 
+  geom_point(size = 2) +
+  scale_color_manual(values=c("#000000", "#FF0000")) +
+  theme_minimal()
+train <- sample(102,102*(75/100), replace = FALSE)
+svmfit <- svm(y~., data = dat[train,], kernel = "polynomial", gamma = 1, cost = 1)
+
+svmfit1 <- svm(y~., data = training_set, kernel = "polynomial", gamma = 1, cost = 1)
+plot(svmfit1,training_set)
+tune.out <- tune(svmfit1, y~., data = training_set, kernel = "polynomial",ranges = list(cost = c(0.1,1,10,100,1000),
+                               gamma = c(0.5,1,2,3,4)))
+tune.out$best.model
+train.svm <- dat[train,] 
+test <- dat[-train,]
+test
+svm_pred_train <- predict(svmfit1,training_set)
+valid_train <- table(true = training_set$Man.of.the.Match, pred = svm_pred_train)
+valid_train
+svm_train_accuracy <- (valid_train[1,1]+valid_train[2,2])/sum(valid_train)
+svm_train_accuracy
+svm_pred_test <-  predict(svmfit1,test_set)
+svm.conf.mat.test <- table(true = test_set$Man.of.the.Match, pred = svm_pred_test)
+svm.conf.mat.test
+svm_test_accuracy<-(svm.conf.mat.test[1,1]+svm.conf.mat.test[2,2])/sum(svm.conf.mat.test)
+svm_test_accuracy
+svm.sensitivity.test <- (svm.conf.mat.test[2,2]) / (svm.conf.mat.test[1,2] + svm.conf.mat.test[2,2])
+svm.sensitivity.test
+svm.specificity.test <- (svm.conf.mat.test[1,1]) / (svm.conf.mat.test[1,1] + svm.conf.mat.test[2,1])
+svm.specificity.test
+plot(tune.out)
+svm.pred.test.bin <- ifelse(svm_pred_test=="Yes",1,0)
+pred <- prediction(svm.pred.test.bin, test_set$Man.of.the.Match)
+perf <- performance(pred, measure = "tpr", x.measure = "fpr")
+plot(perf, main = "ROC Curve")
+abline(a=0,b=1,lwd=2,lty=2,col="darkgrey")
+area.under.curve <- performance(pred, measure = "auc")
+area.under.curve <- area.under.curve@y.values[[1]]
+area.under.curve
+
+
+################################################# RANDOM FOREST
+library(randomForest)
+set.seed(412) 
+rf <-randomForest(Man.of.the.Match~.,data=training_set[,-c(1,2)], ntree=500) 
+print(rf)
+#Parameter Tuning
+set.seed(412)
+mtry <- tuneRF(x = training_set[,-c(1,2)], 
+                                 y=as.factor(training_set$Man.of.the.Match),
+                                 mtryStart = 3, 
+                                 ntreeTry=500, 
+                                 stepFactor = 1.5, 
+                                 improve = 0.0001, 
+                                 trace=TRUE, 
+                                 plot = TRUE,
+                                 doBest = TRUE,
+                                 nodesize = 30, 
+                                 importance=TRUE )
+rf1 <- mtry
+best.m <- res[which.min(res[, 2]), 1]
+print(mtry)
+print(best.m)
+set.seed(412)
+rf <-randomForest(Man.of.the.Match~.,data=training_set, mtry=best.m, importance=TRUE,ntree=500)
+print(rf)
+#Evaluate variable importance
+importance(rf1)
+varImpPlot(rf1)
+# we can also build random forest with different ntree values like (100, 200, 300?.,1,000). 
+set.seed(412)
+rf1 <- randomForest(Man.of.the.Match~.,data=training_set, mtry=best.m, importance=T, ntree=1000,
+                    keep.inbag = TRUE, keep.forest = TRUE)
+print(rf1)
+rf.accuracy.train <- (rf1$confusion[1,1] + rf1$confusion[2,2]) / (rf1$confusion[1,1] +
+                      rf1$confusion[1,2] + rf1$confusion[2,1] + rf1$confusion[2,2])
+rf.accuracy.train
+rf.sensitivity.train <- (rf1$confusion[2,2]) / (rf1$confusion[1,2] + rf1$confusion[2,2])
+rf.sensitivity.train
+rf.specificity.train <- (rf1$confusion[1,1]) / (rf1$confusion[1,1] + rf1$confusion[2,1])
+rf.specificity.train
+
+
+
+
+
+#Prediction and Calculate Performance Metrics
+rf_pred1 <- predict(rf1,type = "prob")
+library(ROCR)
+perf_train = prediction(rf_pred1[,2], training_set$Man.of.the.Match)
+# Area under curve
+rf_auc_train <-  performance(perf_train, "auc")
+rf_auc_train@y.values[[1]]
+rf_pred2_train <- performance(perf_train, "tpr", "fpr")
+# Plot the ROC curve
+plot(rf_pred2_train,main = "ROC Curve for Random Forest", col = "firebrick1", lwd = 2)
+abline(a=0,b=1,lwd=2,lty=2,col="darkgrey")
+# Make predictions and check accuracy for training set.
+pred.train.rf <- predict(rf1,training_set)
+confusionMatrix(pred.train.rf,training_set$Man.of.the.Match)
+#Prediction and Calculate Performance Metrics
+rf_pred1 <- predict(rf1,type = "response")
+perf_test <- prediction(rf_pred1[,2], test_set$Man.of.the.Match)
+# Make predictions and calculate accuracy for test set.
+rf.pred.test <-predict(rf1, test_set)
+confusionMatrix(rf.pred.test,test_set$Man.of.the.Match)
+
+pred <- prediction(as.numeric(pred.test.rf), test_set$Man.of.the.Match)
+perf <- performance(pred, measure = "tpr", x.measure = "fpr")
+plot(perf, main = "ROC Curve")
+abline(a=0,b=1,lwd=2,lty=2,col="darkgrey")
+area.under.curve <- performance(pred, measure = "auc")
+area.under.curve <- area.under.curve@y.values[[1]]
+area.under.curve
+
+
+rf_auc_test <-  performance(perf_test, "auc")
+rf_auc_test@y.values[[1]]
+rf_pred2_test <- performance(perf_test, "tpr", "fpr")
+# Plot the ROC curve
+plot(rf_pred2_test,main = "ROC Curve for Random Forest", col = "firebrick1", lwd = 2)
+abline(a=0,b=1,lwd=2,lty=2,col="darkgrey")
+library(forestFloor)
+
+ff <- forestFloor(rf1, training_set, calc_np = FALSE, binary_reg = TRUE, bootstrapFC = FALSE)
+Col = fcol(ff,cols=1,outlier.lim = 2.5)
+plot(ff,col=Col,plot_GOF = T)
+show3d(ff,c(1,5),5,col=Col,plot_GOF = T)
+
+################################################# XGBOOSTING
+library(adabag)
+library(xgboost)
+set.seed(412)
+# Train xgboost
+xgb.grid <- expand.grid(nrounds = 500, #the maximum number of iterations
+                        eta = c(0.01,0.1), # shrinkage
+                        max_depth = c(2,6,10), # Max Tree Depth
+                        gamma = 0, #Minimum Loss Reduction
+                        colsample_bytree = .7,#Subsample Ratio of Columns 
+                        min_child_weight = 1,#Minimum Sum of Instance Weight
+                        subsample = c(.8, 1))
+# Set up training control
+ctrl <- trainControl(method = "repeatedcv",   # 10fold cross validation
+                     number = 5, # do 5 repititions of cv
+                     summaryFunction = twoClassSummary,	## Evaluate performance using the following function		
+                     classProbs=T)## Estimate class probabilities
+xgb.tune <-train(x=training_set[,-c(1,2,3,17,18,19,20,22,23,24,25)],y=training_set$Man.of.the.Match,
+                 method="xgbTree",
+                 metric="ROC",
+                 trControl=ctrl,
+                 tuneGrid=xgb.grid)
+xgb.tune$bestTune
+plot(xgb.tune)  		# Plot the performance of the training models
+res <- xgb.tune$results
+res
+### xgboostModel Predictions and Performance
+xgb.pred.train <- predict(xgb.tune,training_set,type = "raw")
+confusionMatrix(xgb.pred.train,training_set$Man.of.the.Match)
+xgb.probs.train <- predict(xgb.tune, training_set, type = "prob")
+xgb.ROC.train <- roc(predictor = xgb.probs.train$No, response = training_set$Man.of.the.Match, 
+                     levels = rev(levels(training_set$Man.of.the.Match)))
+plot(xgb.ROC.train, main = "xgboost ROC for train set")
+xgb.ROC.train$auc
+# Make predictions using the test data set
+xgb.pred.test <- predict(xgb.tune,test_set,type = "raw")
+#Look at the confusion matrix  
+confusionMatrix(xgb.pred.test,test_set$Man.of.the.Match)   
+#Draw the ROC curve 
+xgb.probs.test <- predict(xgb.tune,test_set,type="prob")
+xgb.probs.test
+xgb.ROC.test <- roc(predictor=xgb.probs.test$No,
+               response=test_set$Man.of.the.Match,
+               levels=rev(levels(test_set$Man.of.the.Match)))
+xgb.ROC.test$auc
+plot(xgb.ROC.test,main="xgboost ROC for test set")
+
+
+pred <- prediction(as.numeric(xgb.pred.test), test_set$Man.of.the.Match)
+perf <- performance(pred, measure = "tpr", x.measure = "fpr")
+plot(perf, main = "ROC Curve")
+abline(a=0,b=1,lwd=2,lty=2,col="darkgrey")
+area.under.curve <- performance(pred, measure = "auc")
+area.under.curve <- area.under.curve@y.values[[1]]
+area.under.curve
+```
+
